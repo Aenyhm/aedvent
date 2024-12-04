@@ -12,7 +12,7 @@ typedef struct {
 static void * sort_array(void * arg) {
   Array_u32 * column = (Array_u32 *)arg;
   qsort(column->items, column->count, sizeof(*column->items), compare);
-  return NULL;
+  pthread_exit(NULL);
 }
 
 static Columns file_to_sorted_columns(Arena * arena, const char * file_path) {

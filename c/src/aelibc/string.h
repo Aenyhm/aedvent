@@ -1,7 +1,5 @@
 #pragma once
-#include <assert.h>
-#include <stdio.h>
-#include <errno.h>
+#include "base.h"
 #include "arena.h"
 
 typedef struct {
@@ -40,14 +38,14 @@ void str_advance(String * s, size_t amount) {
 
 char * str_to_cstr(Arena * arena, String s) {
   size_t count = s.count + 1; // +1 for null-terminator
-  char * value = (char *) arena_push(arena, sizeof(char *)*count);
+  char * value = arena_push(arena, sizeof(char *)*count);
   memcpy(value, s.data, s.count);
   value[count - 1] = '\0';
   return value;
 }
 
 String str_chop_by_delim(String * s, const char * delim) {
-  size_t delim_length = strlen(delim);
+  u32 delim_length = strlen(delim);
   for (size_t i = 0; i < s->count; ++i) {
     if (memcmp(s->data + i, delim, delim_length) == 0) {
       String new_s = {
