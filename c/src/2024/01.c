@@ -1,6 +1,5 @@
 #include <pthread.h>
-
-#include "common.h"
+#include "../aelibc/all.h"
 
 Array_Template(u32, Array_u32);
 
@@ -15,20 +14,17 @@ static void * sort_array(void * arg) {
   pthread_exit(NULL);
 }
 
-static Columns file_to_sorted_columns(Arena * arena, const char * file_path) {
-  Columns columns;
+static Columns parse_columns(String s) {
+  Columns columns = {0};
 
-  Lines lines = parse_file(arena, file_path);
-
-  array_init(arena, columns.left, lines.count);
-  array_init(arena, columns.right, lines.count);
+  Array_String lines = str_split(s, "\n");
 
   for (size_t i = 0; i < lines.count; ++i) {
     String line = lines.items[i];
     String lhs = str_chop_by_delim(&line, "   ");
     String rhs = line;
-    array_append(&columns.left, atoi(str_to_cstr(arena, lhs)));
-    array_append(&columns.right, atoi(str_to_cstr(arena, rhs)));
+    array_append(&columns.left, str_to_int(lhs));
+    array_append(&columns.right, str_to_int(rhs));
   }
 
   pthread_t thread1;
@@ -79,13 +75,17 @@ static u32 find_similarity_score(Columns columns) {
 }
 
 int main() {
-  Arena arena = arena_alloc(KiB(200));
+  Arena arena = arena_alloc(KiB(20));
 
-    Columns example_columns = file_to_sorted_columns(&arena, "data/2024/01/example.txt");
-    Columns input_columns   = file_to_sorted_columns(&arena, "data/2024/01/input.txt");
+    String example = read_whole_file(&arena, "data/2024/01/example.txt");
+    String input   = read_whole_file(&arena, "data/2024/01/input.txt");
+
+    Columns example_columns = parse_columns(example);
+    Columns input_columns   = parse_columns(input);
 
     assert(find_total_distance(example_columns) == 11);
     assert(find_total_distance(input_columns) == 1506483);
+
     assert(find_similarity_score(example_columns) == 31);
     assert(find_similarity_score(input_columns) == 23126924);
 

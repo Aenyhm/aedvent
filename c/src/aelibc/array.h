@@ -8,17 +8,16 @@
     bool   ordered;  \
   } name
 
-// Unordered arrays by default: to remove efficiently an item.
-#define array_init(arena, array, cap) \
-  (array).items = arena_push_array((arena), *(array).items, cap); \
-  (array).count = 0; \
-  (array).capacity = cap; \
-  (array).ordered = false;
+#define ARRAY_INIT_CAP 256
 
 #define array_append(array, item) \
   do { \
-    if ((array)->count + 1 > (array)->capacity) { \
-      panic("Cannot append an item: array capacity = %zu\n", (array)->capacity); \
+    if ((array)->count >= (array)->capacity) { \
+      (array)->capacity = (array)->capacity == 0 ? ARRAY_INIT_CAP : (array)->capacity*2; \
+      (array)->items = realloc((array)->items, (array)->capacity*sizeof(*(array)->items)); \
+      if ((array)->items == NULL) { \
+        panic("Insufficient memory: array capacity = %zu\n", (array)->capacity); \
+      } \
     } \
     (array)->items[(array)->count++] = (item); \
   } while (0)
@@ -26,8 +25,8 @@
 // Named `counter_` to not interfere with outer code.
 #define array_remove_at_index(array, index) \
   do { \
-    if ((index) >= (array)->capacity) { \
-      panic("Cannot remove index `%zu`: array capacity = %zu\n", (index), (array)->capacity); \
+    if ((index) >= (array)->count) { \
+      panic("Cannot remove index `%zu`: array count = %zu\n", (index), (array)->count); \
     } \
     if ((array)->ordered) { \
       for (size_t counter_ = (index); counter_ < (array)->count - 1; ++counter_) { \

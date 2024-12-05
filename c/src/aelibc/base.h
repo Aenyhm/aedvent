@@ -1,5 +1,6 @@
 #pragma once
 #include <assert.h>
+#include <ctype.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -20,12 +21,3 @@ typedef unsigned long long u64; // 18 446 744 073 709 551 615
 
 #define KiB(n) 1024*(n)
 #define MiB(n) 1024*KiB(n)
-
-int compare(const void * a, const void * b) {
-  int int_a = *((int *)a);
-  int int_b = *((int *)b);
-
-  if (int_a == int_b) return 0;
-  else if (int_a < int_b) return -1;
-  else return 1;
-}
