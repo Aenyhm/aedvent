@@ -2,7 +2,7 @@
 #include "log.h"
 
 typedef struct {
-  char * data;
+  void * data;
   size_t count;
   size_t offset;
 } Arena;
@@ -35,16 +35,13 @@ void * arena_push_aligned(Arena * arena, size_t count, size_t alignment) {
 
   arena->offset += padding;
 
-  void * data = (char *)arena->data + arena->offset;
+  void * data = (u8 *)arena->data + arena->offset;
   arena->offset += count;
   return data;
 }
 
 void arena_release(Arena * arena) {
-  printf(
-    "[DEBUG] Arena release: " arena_fmt "\n",
-    arena_args(arena->offset, arena->count)
-  );
+  printf("[DEBUG] Arena release: " arena_fmt "\n", arena_args(arena->offset, arena->count));
 
   free(arena->data);
 }

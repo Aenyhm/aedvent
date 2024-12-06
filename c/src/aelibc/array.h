@@ -8,12 +8,17 @@
     bool   ordered;  \
   } name
 
-#define ARRAY_INIT_CAP 256
+#define ARRAY_INIT_CAP 1024
 
 #define array_append(array, item) \
   do { \
     if ((array)->count >= (array)->capacity) { \
-      (array)->capacity = (array)->capacity == 0 ? ARRAY_INIT_CAP : (array)->capacity*2; \
+      if ((array)->capacity == 0) { \
+        (array)->capacity = ARRAY_INIT_CAP; \
+      } else { \
+        (array)->capacity = (array)->capacity*2; \
+        printf("[DEBUG] Realloc array: new max items = %zu\n", (array)->capacity); \
+      } \
       (array)->items = realloc((array)->items, (array)->capacity*sizeof(*(array)->items)); \
       if ((array)->items == NULL) { \
         panic("Insufficient memory: array capacity = %zu\n", (array)->capacity); \
