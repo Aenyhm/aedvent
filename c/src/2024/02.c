@@ -3,16 +3,6 @@
 Array_Template(u8, Levels);
 Array_Template(Levels, Reports);
 
-static Levels line_to_levels(String * line) {
-  Levels result = {0};
-  while (line->count) {
-    String level_string = str_chop_by_delim(line, " ");
-    array_append(&result, str_to_int(level_string));
-  }
-
-  return result;
-}
-
 static Reports parse_reports(String s) {
   Reports reports;
 
@@ -20,7 +10,11 @@ static Reports parse_reports(String s) {
 
   for (size_t i = 0; i < lines.count; ++i) {
     String line = lines.items[i];
-    Levels levels = line_to_levels(&line);
+    Array_String levels_as_strings = str_split(line, " ");
+    Levels levels = {0};
+    for (size_t j = 0; j < levels_as_strings.count; ++j) {
+      array_append(&levels, str_to_int(levels_as_strings.items[j]));
+    }
     array_append(&reports, levels);
   }
 

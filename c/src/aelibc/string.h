@@ -25,7 +25,7 @@ String read_whole_file(Arena * arena, const char * file_path) {
   fseek(file, 0, SEEK_END);
   result.count = ftell(file);
   fseek(file, 0, SEEK_SET);
-  result.data = arena_push(arena, result.count + 1);
+  result.data = arena_push_array(arena, char, result.count + 1);
   fread(result.data, result.count, 1, file);
   result.data[result.count] = 0;
 
@@ -53,7 +53,7 @@ String cstr_to_str(char * cstr) {
 
 char * str_to_cstr(Arena * arena, String s) {
   size_t count = s.count + 1; // +1 for null-terminator
-  char * value = arena_push(arena, sizeof(char *)*count);
+  char * value = arena_push_array(arena, char, count);
   memcpy(value, s.data, s.count);
   value[count - 1] = '\0';
   return value;
@@ -68,7 +68,7 @@ String str_sub(Arena * arena, String s, size_t start, size_t end) {
 
   String result = {0};
   result.count = end - start;
-  result.data = arena_push(arena, sizeof(String)*result.count);
+  result.data = arena_push_array(arena, char, result.count);
   memcpy(result.data, s.data + start, result.count);
   return result;
 }
