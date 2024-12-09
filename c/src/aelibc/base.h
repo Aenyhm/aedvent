@@ -21,3 +21,5 @@ typedef unsigned long long u64; // 18 446 744 073 709 551 615
 
 #define KiB(n) 1024*(n)
 #define MiB(n) 1024*KiB(n)
+
+#define UNREACHABLE assert(false && "unreachable")
