@@ -1,4 +1,7 @@
 #include "common/ascii.h"
+#include "common/result.h"
+
+Arena arena;
 
 typedef struct {
   int x;
@@ -69,17 +72,16 @@ static int count_visited_cells(Ascii_Grid grid) {
   return result;
 }
 
+static s64 part1(String s) { return count_visited_cells(parse_grid(&arena, s)); }
+
 int main() {
-  Arena arena = arena_alloc(KiB(100));
+  arena = arena_alloc(KiB(100));
 
     String example = read_whole_file(&arena, "data/2024/06/example.txt");
     String input   = read_whole_file(&arena, "data/2024/06/input.txt");
 
-    Ascii_Grid example_grid = parse_grid(&arena, example);
-    Ascii_Grid input_grid = parse_grid(&arena, input);
-
-    assert(count_visited_cells(example_grid) == 41);
-    assert(count_visited_cells(input_grid) == 5101);
+    run(part1, example, 41);
+    run(part1, input, 5101);
 
     // TODO: part 2
 

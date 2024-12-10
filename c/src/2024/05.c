@@ -1,4 +1,6 @@
-#include "../aelibc/all.h"
+#include "common/result.h"
+
+Arena arena;
 
 typedef struct {
   int page1;
@@ -6,8 +8,7 @@ typedef struct {
 } Rule;
 
 Array_Template(Rule, Array_Rule);
-Array_Template(int, Array_Int);
-Array_Template(Array_Int, Array_Update);
+Array_Template(Array_s64, Array_Update);
 
 typedef struct {
   Array_Rule rules;
@@ -16,7 +17,7 @@ typedef struct {
 
 typedef struct {
   int value;
-  Array_Int nexts;
+  Array_s64 nexts;
 } Intermediate_Rule;
 Array_Template(Intermediate_Rule, Array_Intermediate_Rule);
 
@@ -26,19 +27,19 @@ static Rule parse_rule(String s) {
   Rule rule = {0};
 
   String lhs = str_chop_by_delim(&s, "|");
-  rule.page1 = str_to_int(lhs);
-  rule.page2 = str_to_int(s);
+  rule.page1 = str_to_s64(lhs);
+  rule.page2 = str_to_s64(s);
 
   return rule;
 }
 
-static Array_Int parse_update(String s) {
-  Array_Int pages = {0};
+static Array_s64 parse_update(String s) {
+  Array_s64 pages = {0};
 
   Array_String pages_strings = str_split(s, ",");
   for (size_t i = 0; i < pages_strings.count; ++i) {
     String item = pages_strings.items[i];
-    int page = str_to_int(item);
+    int page = str_to_s64(item);
     array_append(&pages, page);
   }
 
@@ -61,7 +62,7 @@ static File_Data parse_file_data(String * s) {
   Array_String updates = str_split(updates_string, "\n");
   for (size_t i = 0; i < updates.count; ++i) {
     String item = updates.items[i];
-    Array_Int pages = parse_update(item);
+    Array_s64 pages = parse_update(item);
     array_append(&file_data.updates, pages);
   }
 
@@ -126,31 +127,18 @@ static Intermediate_Rule find_irule(Array_Intermediate_Rule irules, int page) {
   return result;
 }
 
-static bool array_int_contains(Array_Int a, int value) {
-  bool result = false;
-
-  for (size_t i = 0; i < a.count; ++i) {
-    if (a.items[i] == value) {
-      result = true;
-      break;
-    }
-  }
-
-  return result;
-}
-
-static bool is_valid_update(Array_Intermediate_Rule irules, Array_Int pages) {
+static bool is_valid_update(Array_Intermediate_Rule irules, Array_s64 pages) {
   bool result = true;
 
   for (size_t i = 0; i < pages.count; ++i) {
     int update_page = pages.items[i];
     Intermediate_Rule irule = find_irule(irules, update_page);
 
-    bool is_valid = (
-      !irule.value ||
-      i == pages.count - 1 ||
-      array_int_contains(irule.nexts, pages.items[i + 1])
-    );
+    if (!irule.value || i == pages.count - 1) continue;
+
+    bool is_valid;
+    array_contains(irule.nexts, pages.items[i + 1], is_valid);
+
     if (!is_valid) {
       result = false;
       break;
@@ -162,7 +150,7 @@ static bool is_valid_update(Array_Intermediate_Rule irules, Array_Int pages) {
 
 static void remove_wrong_updates(Array_Intermediate_Rule irules, Array_Update * updates) {
   for (size_t i = 0; i < updates->count;) {
-    Array_Int pages = updates->items[i];
+    Array_s64 pages = updates->items[i];
 
     if (is_valid_update(irules, pages)) {
       i++;
@@ -176,7 +164,7 @@ static int compute_middle_row(Array_Update updates) {
   int result = 0;
 
   for (size_t i = 0; i < updates.count; ++i) {
-    Array_Int pages = updates.items[i];
+    Array_s64 pages = updates.items[i];
     size_t middle_index = pages.count/2;
     result += pages.items[middle_index];
   }
@@ -192,17 +180,16 @@ static int process(File_Data file_data, Fix_Function fix_fn) {
   return compute_middle_row(file_data.updates);
 }
 
+static s64 part1(String s) { return process(parse_file_data(&s), remove_wrong_updates); }
+
 int main() {
-  Arena arena = arena_alloc(KiB(100));
+  arena = arena_alloc(KiB(100));
 
     String example = read_whole_file(&arena, "data/2024/05/example.txt");
     String input   = read_whole_file(&arena, "data/2024/05/input.txt");
 
-    File_Data example_file_data = parse_file_data(&example);
-    File_Data input_file_data = parse_file_data(&input);
-
-    assert(process(example_file_data, remove_wrong_updates) == 143);
-    assert(process(input_file_data, remove_wrong_updates) == 5108);
+    run(part1, example, 143);
+    run(part1, input, 5108);
 
     // TODO: part 2
 

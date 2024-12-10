@@ -1,4 +1,7 @@
 #include "common/ascii.h"
+#include "common/result.h"
+
+Arena arena;
 
 #define WORD1 "XMAS"
 #define WORD2 "MAS"
@@ -69,20 +72,20 @@ static u32 count_words(Ascii_Grid grid, Lookup_Function lookup_fn) {
   return result;
 }
 
+static s64 part1(String s) { return count_words(parse_grid(&arena, s), part1_lookup); }
+static s64 part2(String s) { return count_words(parse_grid(&arena, s), part2_lookup); }
+
 int main() {
-  Arena arena = arena_alloc(KiB(100));
+  arena = arena_alloc(KiB(100));
 
     String example = read_whole_file(&arena, "data/2024/04/example.txt");
     String input   = read_whole_file(&arena, "data/2024/04/input.txt");
 
-    Ascii_Grid example_grid = parse_grid(&arena, example);
-    Ascii_Grid input_grid   = parse_grid(&arena, input);
+    run(part1, example, 18);
+    run(part1, input, 2591);
 
-    assert(count_words(example_grid, part1_lookup) == 18);
-    assert(count_words(input_grid, part1_lookup) == 2591);
-
-    assert(count_words(example_grid, part2_lookup) == 9);
-    assert(count_words(input_grid, part2_lookup) == 1880);
+    run(part2, example, 9);
+    run(part2, input, 1880);
 
   arena_release(&arena);
 

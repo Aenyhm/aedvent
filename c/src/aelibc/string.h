@@ -2,7 +2,6 @@
 #include "base.h"
 #include "arena.h"
 #include "array.h"
-#include "number.h"
 
 typedef struct {
   char * data;
@@ -98,13 +97,4 @@ Array_String str_split(String s, const char * delim) {
   }
 
   return strings;
-}
-
-int str_to_int(String s) {
-  int result;
-
-  int scan_result = sscanf(s.data, "%d", &result);
-  if (scan_result == 0 || (size_t)count_digits(result) != s.count) result = -1;
-
-  return result;
 }

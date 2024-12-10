@@ -1,15 +1,13 @@
 #include <pthread.h>
-#include "../aelibc/all.h"
-
-Array_Template(u32, Array_u32);
+#include "common/result.h"
 
 typedef struct {
-  Array_u32 left;
-  Array_u32 right;
+  Array_s64 left;
+  Array_s64 right;
 } Columns;
 
 static void * sort_array(void * arg) {
-  Array_u32 * column = (Array_u32 *)arg;
+  Array_s64 * column = (Array_s64 *)arg;
   qsort(column->items, column->count, sizeof(*column->items), compare);
   pthread_exit(NULL);
 }
@@ -23,8 +21,8 @@ static Columns parse_columns(String s) {
     String line = lines.items[i];
     String lhs = str_chop_by_delim(&line, "   ");
     String rhs = line;
-    array_append(&columns.left, str_to_int(lhs));
-    array_append(&columns.right, str_to_int(rhs));
+    array_append(&columns.left, str_to_s64(lhs));
+    array_append(&columns.right, str_to_s64(rhs));
   }
 
   pthread_t thread1;
@@ -37,28 +35,28 @@ static Columns parse_columns(String s) {
   return columns;
 }
 
-static u32 find_total_distance(Columns columns) {
-  u32 result = 0;
+static s64 find_total_distance(Columns columns) {
+  s64 result = 0;
   for (size_t i = 0; i < columns.left.count; ++i) {
-    u32 distance = labs((s32)(columns.left.items[i] - columns.right.items[i]));
+    s64 distance = llabs(columns.left.items[i] - columns.right.items[i]);
     result += distance;
   }
   return result;
 }
 
-static u32 find_similarity_score(Columns columns) {
-  u32 result = 0;
+static s64 find_similarity_score(Columns columns) {
+  s64 result = 0;
 
   u8 left_occurences = 1;
   size_t right_index = 0;
   for (size_t left_index = 0; left_index < columns.left.count; left_index++) {
-    u32 lhs = columns.left.items[left_index];
+    s64 lhs = columns.left.items[left_index];
     if (lhs == columns.left.items[left_index + 1]) {
       left_occurences++;
     } else {
       u8 right_occurences = 0;
       while (right_index < columns.right.count) {
-        u32 rhs = columns.right.items[right_index];
+        s64 rhs = columns.right.items[right_index];
         if (rhs == lhs) right_occurences++;
         if (rhs <= lhs) {
           right_index++;
@@ -74,20 +72,20 @@ static u32 find_similarity_score(Columns columns) {
   return result;
 }
 
+static s64 part1(String s) { return find_total_distance(parse_columns(s)); }
+static s64 part2(String s) { return find_similarity_score(parse_columns(s)); }
+
 int main() {
   Arena arena = arena_alloc(KiB(20));
 
     String example = read_whole_file(&arena, "data/2024/01/example.txt");
     String input   = read_whole_file(&arena, "data/2024/01/input.txt");
 
-    Columns example_columns = parse_columns(example);
-    Columns input_columns   = parse_columns(input);
+    run(part1, example, 11);
+    run(part1, input, 1506483);
 
-    assert(find_total_distance(example_columns) == 11);
-    assert(find_total_distance(input_columns) == 1506483);
-
-    assert(find_similarity_score(example_columns) == 31);
-    assert(find_similarity_score(input_columns) == 23126924);
+    run(part2, example, 31);
+    run(part2, input, 23126924);
 
   arena_release(&arena);
 

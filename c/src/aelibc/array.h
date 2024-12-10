@@ -45,3 +45,17 @@
     } \
     --(array)->count; \
   } while (0)
+
+#define array_map(input_array, fn, output_array) \
+  for (size_t counter_ = 0; counter_ < (input_array).count; ++counter_) { \
+    array_append((output_array), fn((input_array).items[counter_])); \
+  }
+
+#define array_contains(array, item, result) \
+  (result) = false; \
+  for (size_t counter_ = 0; counter_ < (array).count; ++counter_) { \
+    if ((array).items[counter_] == (item)) { \
+      (result) = true; \
+      break; \
+    } \
+  }
