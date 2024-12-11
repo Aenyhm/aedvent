@@ -7,7 +7,7 @@ typedef struct {
   int height;
 } Ascii_Grid;
 
-Ascii_Grid parse_grid(Arena * arena, String s) {
+Ascii_Grid string_to_grid(Arena * arena, String s) {
   Ascii_Grid grid = {0};
   grid.chars = arena_push_array(arena, u8, s.count);
 

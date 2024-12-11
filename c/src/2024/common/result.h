@@ -11,7 +11,7 @@ static void run_part(const char * label, Process_Function process_fn, String dat
   s64 result = process_fn(data);
   clock_gettime(CLOCK_MONOTONIC, &end);
 
-  double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec)/1000000000.0;
+  u64 elapsed_ns = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
 
   if (result == expected)  printf("✓");
   else if (expected == -1) printf("?");
@@ -26,7 +26,7 @@ static void run_part(const char * label, Process_Function process_fn, String dat
   if (profile) {
     u8 spacing = 20;
     for (u8 i = 0; i < spacing - count_digits(result); ++i) printf(" ");
-    printf("(in %.6f seconds)", elapsed);
+    printf("(in %.3f ms)", elapsed_ns/1000000.);
   }
 
   printf("\n");

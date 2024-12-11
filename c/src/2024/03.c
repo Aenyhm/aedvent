@@ -88,7 +88,7 @@ static s64 compute_mul(String * s) {
   return x*y;
 }
 
-s64 process_instructions(Array_String instructions, bool with_do_and_dont) {
+static s64 process_instructions(Array_String instructions, bool with_do_and_dont) {
   s64 result = 0;
 
   bool enable_mul = true;
@@ -112,7 +112,7 @@ static s64 part1(String s) { return process_instructions(parse_instructions(&s),
 static s64 part2(String s) { return process_instructions(parse_instructions(&s), true); }
 
 int main() {
-  arena = arena_alloc(KiB(200));
+  arena = arena_alloc(KiB(100));
 
     String example1 = read_whole_file(&arena, "data/2024/03/example1.txt");
     String input    = read_whole_file(&arena, "data/2024/03/input.txt");

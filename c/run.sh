@@ -25,13 +25,8 @@ else
   flags="${flags} -O3"
 fi
 
-if [ ${platform} = "linux" ]; then
-  compiler="cc"
-else
-  compiler="gcc-14"
-fi
-
-libs="-lm -lpthread"
+compiler="cc"
+libs="-lm"
 
 files=$(find "./c/src/2024" -type f -name "*.c" | sort)
 if [[ $2 = "last" ]]; then

@@ -7,7 +7,7 @@
 
 Array_Template(s64, Array_s64);
 
-int compare(const void * a, const void * b) {
+int compare_int(const void * a, const void * b) {
   int int_a = *((int *)a);
   int int_b = *((int *)b);
 

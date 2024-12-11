@@ -160,11 +160,17 @@ static void lookup_part1(Array_Intermediate_Rule irules, Array_Update * updates)
   }
 }
 
-static int compute_middle_row(Array_Update updates) {
+static int process(String s, Lookup lookup) {
   int result = 0;
 
-  for (size_t i = 0; i < updates.count; ++i) {
-    Array_s64 pages = updates.items[i];
+  File_Data file_data = parse_file_data(&s);
+
+  Array_Intermediate_Rule irules = rules_to_intermediate_rules(file_data.rules);
+
+  lookup(irules, &file_data.updates);
+
+  for (size_t i = 0; i < file_data.updates.count; ++i) {
+    Array_s64 pages = file_data.updates.items[i];
     size_t middle_index = pages.count/2;
     result += pages.items[middle_index];
   }
@@ -172,15 +178,7 @@ static int compute_middle_row(Array_Update updates) {
   return result;
 }
 
-static int process(File_Data file_data, Lookup lookup) {
-  Array_Intermediate_Rule irules = rules_to_intermediate_rules(file_data.rules);
-
-  lookup(irules, &file_data.updates);
-
-  return compute_middle_row(file_data.updates);
-}
-
-static s64 part1(String s) { return process(parse_file_data(&s), lookup_part1); }
+static s64 part1(String s) { return process(s, lookup_part1); }
 
 int main() {
   arena = arena_alloc(KiB(100));

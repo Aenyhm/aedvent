@@ -2,25 +2,7 @@
 
 Arena arena;
 
-Array_Template(Array_s64, Reports);
-
-static Reports parse_reports(String s) {
-  Reports reports = {0};
-
-  Array_String lines = str_split(s, "\n");
-
-  for (size_t i = 0; i < lines.count; ++i) {
-    String line = lines.items[i];
-    Array_String levels_as_strings = str_split(line, " ");
-    Array_s64 levels = {0};
-    for (size_t j = 0; j < levels_as_strings.count; ++j) {
-      array_append(&levels, str_to_s64(levels_as_strings.items[j]));
-    }
-    array_append(&reports, levels);
-  }
-
-  return reports;
-}
+typedef bool (*Lookup)(Array_s64);
 
 static bool check_delta(s64 prev_delta, s64 delta) {
   if (prev_delta) {
@@ -30,7 +12,7 @@ static bool check_delta(s64 prev_delta, s64 delta) {
   return llabs(delta) >= 1 && llabs(delta) <= 3;
 }
 
-static bool is_safe_report(Array_s64 levels) {
+static bool lookup_part1(Array_s64 levels) {
   bool result = true;
 
   s64 delta = 0;
@@ -48,34 +30,43 @@ static bool is_safe_report(Array_s64 levels) {
   return result;
 }
 
-static bool is_safe_report_with_tolerance(Array_s64 levels) {
+static bool lookup_part2(Array_s64 levels) {
   bool result = false;
 
-  for (u8 j = 0; j < levels.count; ++j) {
-    Array_s64 sub_levels = {0};
+  if (lookup_part1(levels)) {
+    result = true;
+  } else {
+    for (u8 i = 0; i < levels.count; ++i) {
+      Array_s64 sub_levels = {0};
 
-    for (size_t k = 0; k < levels.count; ++k) {
-      if (j != k) {
-        array_append(&sub_levels, levels.items[k]);
+      for (size_t j = 0; j < levels.count; ++j) {
+        if (i != j) {
+          array_append(&sub_levels, levels.items[j]);
+        }
       }
-    }
 
-    if (is_safe_report(sub_levels)) {
-      result = true;
-      break;
+      if (lookup_part1(sub_levels)) {
+        result = true;
+        break;
+      }
     }
   }
 
   return result;
 }
 
-static s64 count_safe_reports(Reports reports, bool tolerance) {
+static s64 process(String s, Lookup lookup) {
   s64 result = 0;
 
-  for (size_t i = 0; i < reports.count; ++i) {
-    Array_s64 levels = reports.items[i];
+  Array_String lines = str_split(s, "\n");
 
-    if (is_safe_report(levels) || (tolerance && is_safe_report_with_tolerance(levels))) {
+  for (size_t i = 0; i < lines.count; ++i) {
+    String line = lines.items[i];
+    Array_String levels_as_strings = str_split(line, " ");
+    Array_s64 levels = {0};
+    array_map(levels_as_strings, str_to_s64, &levels);
+
+    if (lookup(levels)) {
       result++;
     }
   }
@@ -83,8 +74,8 @@ static s64 count_safe_reports(Reports reports, bool tolerance) {
   return result;
 }
 
-static s64 part1(String s) { return count_safe_reports(parse_reports(s), false); }
-static s64 part2(String s) { return count_safe_reports(parse_reports(s), true); }
+static s64 part1(String s) { return process(s, lookup_part1); }
+static s64 part2(String s) { return process(s, lookup_part2); }
 
 int main() {
   arena = arena_alloc(KiB(20));

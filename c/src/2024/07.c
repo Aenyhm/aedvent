@@ -7,7 +7,6 @@ typedef struct {
   s64 value;
   Array_s64 operands;
 } Equation;
-Array_Template(Equation, Equations);
 
 typedef s64 (*Operation)(s64, s64);
 static s64 sum(s64, s64);
@@ -20,8 +19,8 @@ static Equation line_to_equation(String s) {
 
   result.value = str_to_s64(str_chop_by_delim(&s, ": "));
 
-  Array_String operands_as_string = str_split(s, " ");
-  array_map(operands_as_string, str_to_s64, &result.operands);
+  Array_String operands_as_strings = str_split(s, " ");
+  array_map(operands_as_strings, str_to_s64, &result.operands);
 
   return result;
 }
@@ -67,20 +66,15 @@ static bool is_valid_equation(Equation equation, u8 operation_count) {
   return result;
 }
 
-static Equations parse_input(String s) {
-  Equations equations = {0};
-
-  Array_String lines = str_split(s, "\n");
-  array_map(lines, line_to_equation, &equations);
-
-  return equations;
-}
-
-static s64 count_total_calibrations(Equations equations, u8 operation_count) {
+static s64 process(String s, u8 operation_count) {
   s64 result = 0;
 
-  for (size_t i = 0; i < equations.count; ++i) {
-    Equation equation = equations.items[i];
+  Array_String lines = str_split(s, "\n");
+
+  for (size_t i = 0; i < lines.count; ++i) {
+    String line = lines.items[i];
+    Equation equation = line_to_equation(line);
+
     if (is_valid_equation(equation, operation_count)) {
       result += equation.value;
     }
@@ -89,8 +83,8 @@ static s64 count_total_calibrations(Equations equations, u8 operation_count) {
   return result;
 }
 
-static s64 part1(String s) { return count_total_calibrations(parse_input(s), 2); }
-static s64 part2(String s) { return count_total_calibrations(parse_input(s), 3); }
+static s64 part1(String s) { return process(s, 2); }
+static s64 part2(String s) { return process(s, 3); }
 
 int main() {
   arena = arena_alloc(KiB(100));

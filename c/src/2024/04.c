@@ -60,8 +60,10 @@ static u8 lookup_part2(Ascii_Grid grid, int row, int col) {
   return result;
 }
 
-static u32 count_words(Ascii_Grid grid, Lookup lookup) {
-  u32 result = 0;
+static s64 process(String s, Lookup lookup) {
+  s64 result = 0;
+
+  Ascii_Grid grid = string_to_grid(&arena, s);
 
   for (int col = 0; col < grid.height; ++col) {
     for (int row = 0; row < grid.width; ++row) {
@@ -72,8 +74,8 @@ static u32 count_words(Ascii_Grid grid, Lookup lookup) {
   return result;
 }
 
-static s64 part1(String s) { return count_words(parse_grid(&arena, s), lookup_part1); }
-static s64 part2(String s) { return count_words(parse_grid(&arena, s), lookup_part2); }
+static s64 part1(String s) { return process(s, lookup_part1); }
+static s64 part2(String s) { return process(s, lookup_part2); }
 
 int main() {
   arena = arena_alloc(KiB(100));

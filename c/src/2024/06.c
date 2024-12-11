@@ -46,8 +46,10 @@ static Guard find_guard(Ascii_Grid grid) {
   return guard;
 }
 
-static int count_visited_cells(Ascii_Grid grid) {
+static s64 process(String s) {
   int result = 0;
+
+  Ascii_Grid grid = string_to_grid(&arena, s);
 
   Guard guard = find_guard(grid);
   grid.chars[get_cell_index(grid, guard.position.x, guard.position.y)] = 'X';
@@ -72,7 +74,7 @@ static int count_visited_cells(Ascii_Grid grid) {
   return result;
 }
 
-static s64 part1(String s) { return count_visited_cells(parse_grid(&arena, s)); }
+static s64 part1(String s) { return process(s); }
 
 int main() {
   arena = arena_alloc(KiB(100));
