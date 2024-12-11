@@ -1,5 +1,4 @@
 .*
-*.sh
 !.gitignore
 
 c/dist/

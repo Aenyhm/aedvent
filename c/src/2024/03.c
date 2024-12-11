@@ -118,11 +118,8 @@ int main() {
     String input    = read_whole_file(&arena, "data/2024/03/input.txt");
     String example2 = read_whole_file(&arena, "data/2024/03/example2.txt");
 
-    run(part1, example1, 161);
-    run(part1, input, 171183089);
-
-    run(part2, example2, 48);
-    run(part2, input, 63866497);
+    run(part1, example1, 161, input, 171183089);
+    run(part2, example2,  48, input, 63866497);
 
   arena_release(&arena);
 
