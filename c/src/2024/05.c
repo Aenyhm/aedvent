@@ -21,7 +21,7 @@ typedef struct {
 } Intermediate_Rule;
 Array_Template(Intermediate_Rule, Array_Intermediate_Rule);
 
-typedef void (*Fix_Function)(Array_Intermediate_Rule, Array_Update *);
+typedef void (*Lookup)(Array_Intermediate_Rule, Array_Update *);
 
 static Rule parse_rule(String s) {
   Rule rule = {0};
@@ -148,7 +148,7 @@ static bool is_valid_update(Array_Intermediate_Rule irules, Array_s64 pages) {
   return result;
 }
 
-static void remove_wrong_updates(Array_Intermediate_Rule irules, Array_Update * updates) {
+static void lookup_part1(Array_Intermediate_Rule irules, Array_Update * updates) {
   for (size_t i = 0; i < updates->count;) {
     Array_s64 pages = updates->items[i];
 
@@ -172,15 +172,15 @@ static int compute_middle_row(Array_Update updates) {
   return result;
 }
 
-static int process(File_Data file_data, Fix_Function fix_fn) {
+static int process(File_Data file_data, Lookup lookup) {
   Array_Intermediate_Rule irules = rules_to_intermediate_rules(file_data.rules);
 
-  fix_fn(irules, &file_data.updates);
+  lookup(irules, &file_data.updates);
 
   return compute_middle_row(file_data.updates);
 }
 
-static s64 part1(String s) { return process(parse_file_data(&s), remove_wrong_updates); }
+static s64 part1(String s) { return process(parse_file_data(&s), lookup_part1); }
 
 int main() {
   arena = arena_alloc(KiB(100));

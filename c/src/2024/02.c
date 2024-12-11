@@ -5,7 +5,7 @@ Arena arena;
 Array_Template(Array_s64, Reports);
 
 static Reports parse_reports(String s) {
-  Reports reports;
+  Reports reports = {0};
 
   Array_String lines = str_split(s, "\n");
 

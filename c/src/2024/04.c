@@ -6,9 +6,9 @@ Arena arena;
 #define WORD1 "XMAS"
 #define WORD2 "MAS"
 
-typedef u8 (*Lookup_Function)(Ascii_Grid grid, int row, int col);
+typedef u8 (*Lookup)(Ascii_Grid grid, int row, int col);
 
-static u8 part1_lookup(Ascii_Grid grid, int row, int col) {
+static u8 lookup_part1(Ascii_Grid grid, int row, int col) {
   u8 result = 0;
 
   // 8 directions
@@ -33,7 +33,7 @@ static u8 part1_lookup(Ascii_Grid grid, int row, int col) {
   return result;
 }
 
-static u8 part2_lookup(Ascii_Grid grid, int row, int col) {
+static u8 lookup_part2(Ascii_Grid grid, int row, int col) {
   u8 result = 0;
 
   // start at center
@@ -60,20 +60,20 @@ static u8 part2_lookup(Ascii_Grid grid, int row, int col) {
   return result;
 }
 
-static u32 count_words(Ascii_Grid grid, Lookup_Function lookup_fn) {
+static u32 count_words(Ascii_Grid grid, Lookup lookup) {
   u32 result = 0;
 
   for (int col = 0; col < grid.height; ++col) {
     for (int row = 0; row < grid.width; ++row) {
-      result += lookup_fn(grid, row, col);
+      result += lookup(grid, row, col);
     }
   }
 
   return result;
 }
 
-static s64 part1(String s) { return count_words(parse_grid(&arena, s), part1_lookup); }
-static s64 part2(String s) { return count_words(parse_grid(&arena, s), part2_lookup); }
+static s64 part1(String s) { return count_words(parse_grid(&arena, s), lookup_part1); }
+static s64 part2(String s) { return count_words(parse_grid(&arena, s), lookup_part2); }
 
 int main() {
   arena = arena_alloc(KiB(100));

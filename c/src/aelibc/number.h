@@ -16,8 +16,8 @@ int compare(const void * a, const void * b) {
   else return 1;
 }
 
-int count_digits(int n) {
-  if (n < 0)  return count_digits(n == INT_MIN ? INT_MAX: -n);
+s64 count_digits(s64 n) {
+  if (n < 0)  return count_digits(n == LONG_MIN ? LONG_MAX: -n);
   if (n < 10) return 1;
   return 1 + count_digits(n/10);
 }
