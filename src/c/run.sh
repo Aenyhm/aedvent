@@ -28,7 +28,7 @@ fi
 compiler="cc"
 libs="-lm"
 
-files=$(find "./c/src/2024" -type f -name "*.c" | sort)
+files=$(find "./src/c/2024" -type f -name "day*.c" | sort)
 if [[ $2 = "last" ]]; then
   files=$(echo "${files}" | tail -n 1)
 fi
@@ -36,11 +36,11 @@ fi
 for file in ${files}; do
   file_name=$(basename ${file})
   echo "Running ${file_name}"
-  echo "------------"
+  echo "---------------"
   full_exe="${exe_path}-${file_name}"
   full_exe=${full_exe::-2}
   ${compiler} ${flags} -o ${full_exe} ${file} ${libs}
   ASAN_OPTIONS=detect_leaks=0 ./${full_exe}
   echo ""
-  echo "************"
+  echo "***************"
 done

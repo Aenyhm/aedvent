@@ -1,4 +1,5 @@
 .*
 !.gitignore
 
-c/dist/
+dist/
+__pycache__/
