@@ -6,3 +6,4 @@
 #include "array.h"
 #include "string.h"
 #include "number.h"
+#include "table.h"

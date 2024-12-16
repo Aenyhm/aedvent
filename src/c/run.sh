@@ -1,8 +1,8 @@
 set -eo pipefail
 
 path=$(dirname $0)
-name=$1
-dist=$3
+name="aedvent"
+dist=$2
 
 case "$(uname -s)" in
   Linux*)  platform="linux";;
@@ -29,7 +29,8 @@ compiler="cc"
 libs="-lm"
 
 files=$(find "./src/c/2024" -type f -name "day*.c" | sort)
-if [[ $2 = "last" ]]; then
+
+if [[ $1 = "last" ]]; then
   files=$(echo "${files}" | tail -n 1)
 fi
 

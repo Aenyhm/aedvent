@@ -1,26 +1,14 @@
 #include "common/ascii.h"
 #include "common/result.h"
+#include "common/vector.h"
 
 Arena arena;
-
-typedef struct {
-  int x;
-  int y;
-} V2;
 
 typedef struct {
   V2 position;
   V2 direction_vector;
   int rotation_count;
 } Guard;
-
-static V2 v2_add(V2 a, V2 b) {
-  return (V2){a.x + b.x, a.y + b.y};
-}
-
-static V2 v2_rotate(V2 v) {
-  return (V2){-v.y, v.x};
-}
 
 static Guard find_guard(Ascii_Grid grid) {
   Guard guard = {0};
