@@ -4,8 +4,8 @@
 Arena arena;
 
 typedef struct {
-  s64 value;
   Array_s64 operands;
+  s64 value;
 } Equation;
 
 typedef s64 (*Operation)(s64, s64);

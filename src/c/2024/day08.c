@@ -1,7 +1,6 @@
 #include "common/ascii.h"
 #include "common/result.h"
 #include "common/vector.h"
-#include <stdlib.h>
 
 Arena arena;
 
@@ -10,16 +9,20 @@ Table_Template(u8, Array_V2, Table_Frequency);
 
 #define ANTINODE_CHAR '#'
 
-static bool try_create_antinode(Ascii_Grid * grid, V2 position) {
-  bool result = false;
+static s8 try_create_antinode(Ascii_Grid * grid, V2 position) {
+  s8 result;
 
   int cell_index = get_cell_index(*grid, position.x, position.y);
   if (cell_index != -1) {
     u8 c1 = grid->chars[cell_index];
     if (c1 != ANTINODE_CHAR) {
-      result = true;
+      result = 1;
       grid->chars[cell_index] = ANTINODE_CHAR;
+    } else {
+      result = 0;
     }
+  } else {
+    result = -1;
   }
 
   return result;
@@ -44,12 +47,13 @@ static s64 compute_antinodes(Ascii_Grid * grid, Table_Frequency freqs, size_t mi
           V2 antinode1 = v2_sub(pos1, distance);
           V2 antinode2 = v2_add(pos2, distance);
 
-          if (try_create_antinode(grid, antinode1)) {
-            result++;
-          }
-          if (try_create_antinode(grid, antinode2)) {
-            result++;
-          }
+          s8 result1 = try_create_antinode(grid, antinode1);
+          if (result1 == 1) result++;
+
+          s8 result2 = try_create_antinode(grid, antinode2);
+          if (result2 == 1) result++;
+
+          if (result1 == -1 && result2 == -1) break;
         }
       }
     }

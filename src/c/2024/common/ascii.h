@@ -1,10 +1,12 @@
 #pragma once
 #include "../../aelibc/all.h"
 
+// A flat array is more efficient than a 2-dimensional array.
+// To find a cell with coordinates (x,y) just do: `y*grid_width + x`.
 typedef struct {
   u8 * chars;
-  int width;
-  int height;
+  u16 width;
+  u16 height;
 } Ascii_Grid;
 
 Ascii_Grid string_to_grid(Arena * arena, String s) {
@@ -25,11 +27,11 @@ Ascii_Grid string_to_grid(Arena * arena, String s) {
   return grid;
 }
 
-static bool is_cell_in_grid(Ascii_Grid grid, int row, int col) {
+inline bool is_cell_in_grid(Ascii_Grid grid, int row, int col) {
   return row >= 0 && row < grid.width && col >= 0 && col < grid.height;
 }
 
-static int get_cell_index(Ascii_Grid grid, int row, int col) {
+inline int get_cell_index(Ascii_Grid grid, int row, int col) {
   return is_cell_in_grid(grid, row, col) ? col*grid.width + row : -1;
 }
 

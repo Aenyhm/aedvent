@@ -50,7 +50,7 @@ static s64 process(String s) {
 
     u8 c = grid.chars[cell_index];
     if (c == '#') {
-      guard.direction_vector = v2_rotate(guard.direction_vector);
+      guard.direction_vector = v2_rotate(guard.direction_vector, true);
       guard.rotation_count++;
     } else {
       guard.position = next_position;

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../aelibc/all.h"
 
 typedef struct {
   int x;
@@ -17,6 +18,6 @@ inline V2 v2_sub(V2 a, V2 b) {
 inline V2 v2_scale(V2 v, int factor) {
   return (V2){v.x*factor, v.y*factor};
 }
-inline V2 v2_rotate(V2 v) {
-  return (V2){-v.y, v.x};
+inline V2 v2_rotate(V2 v, bool rightward) {
+  return rightward ? (V2){-v.y, v.x} : (V2){v.y, -v.x};
 }

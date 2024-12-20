@@ -10,6 +10,7 @@ static Array_s64 diskmap_to_ids(String s) {
     u8 c = s.data[i];
     if (c == '\n') continue;
 
+    // character to number
     u8 digit = c - '0';
 
     if (i % 2 == 0) {
