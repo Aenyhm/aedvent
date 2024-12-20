@@ -12,10 +12,10 @@ esac
 exe_path="${path}/dist/${name}-${platform}-${dist}"
 
 if [[ ${dist} = "debug" ]]; then
-  debug_flags="-fno-omit-frame-pointer -fstack-protector-strong -fno-common -Wall -Wextra -Wshadow -Wstrict-aliasing=2 -Wformat -O1"
+  debug_flags="-fno-omit-frame-pointer -fstack-protector-strong -fno-common -Wall -Wextra -Wshadow -Wstrict-aliasing=2 -Wformat -pedantic -O1"
 
   if [ ${platform} = "linux" ]; then
-    debug_flags="${debug_flags} -g3 -fsanitize=undefined,bounds,null -fanalyzer -Wanalyzer-null-dereference"
+    debug_flags="${debug_flags} -g3 -fsanitize=undefined,bounds,null -Wanalyzer-null-dereference"
   else
     debug_flags="${debug_flags} -g2"
   fi
