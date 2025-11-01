@@ -1,9 +1,7 @@
 import re
-import time
 from dataclasses import dataclass
-from multiprocessing.pool import Pool
 
-from utils import get_file_content
+import utils
 
 
 @dataclass(slots=True)
@@ -11,10 +9,6 @@ class NumberMatch:
     start_pos: int
     end_pos: int
     value: int
-
-
-def file_to_list(file_name: str) -> list[str]:
-    return get_file_content(file_name).split("\n")
 
 
 def get_line_numbers_matches(line: str) -> list[NumberMatch]:
@@ -37,25 +31,21 @@ def find_adjacent_symbols(match: NumberMatch, index: int, lines: list[str]) -> b
 
     return (
         # Previous character
-        match.start_pos > 0
-        and current_line[match.start_pos - 1] != "."
+        (match.start_pos > 0 and current_line[match.start_pos - 1] != ".")
         or
         # Next character
-        match.end_pos < len(current_line)
-        and current_line[match.end_pos] != "."
+        (match.end_pos < len(current_line) and current_line[match.end_pos] != ".")
         or
         # Previous line
-        index > 0
-        and has_relative_line_symbol(match, lines[index - 1])
+        (index > 0 and has_relative_line_symbol(match, lines[index - 1]))
         or
         # Next line
-        index < len(lines) - 1
-        and has_relative_line_symbol(match, lines[index + 1])
+        (index < len(lines) - 1 and has_relative_line_symbol(match, lines[index + 1]))
     )
 
 
-def part1(lines: list[str], pool: Pool) -> int:
-    number_matches = pool.map(get_line_numbers_matches, lines)
+def part1(lines: list[str]) -> int:
+    number_matches = map(get_line_numbers_matches, lines)
 
     return sum(
         match.value
@@ -66,14 +56,8 @@ def part1(lines: list[str], pool: Pool) -> int:
 
 
 if __name__ == "__main__":
-    pool = Pool()
+    example_content = utils.file_to_lines("03/example.txt")
+    input_content = utils.file_to_lines("03/input.txt")
 
-    example_content = file_to_list("data/2023/03/example.txt")
-    input_content = file_to_list("data/2023/03/input.txt")
-
-    assert part1(example_content, pool) == 4361
-
-    start = time.time()
-    assert part1(input_content, pool) == 544433
-    end = time.time()
-    print(f'{(end - start)*1000:.3} ms')
+    assert part1(example_content) == 4361
+    assert utils.profile(part1)(input_content) == 544433

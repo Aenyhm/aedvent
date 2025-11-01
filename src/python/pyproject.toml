@@ -1,0 +1,89 @@
+[project]
+name = "aedvent"
+version = "0.1.0"
+description = "Advent of Code"
+requires-python = ">=3.13"
+dependencies = [
+    "mypy>=1.18.2",
+    "ruff>=0.14.3",
+]
+
+[tool.mypy]
+ignore_missing_imports = true
+
+# Disallow dynamic typing
+disallow_any_unimported = true
+#disallow_any_expr = true
+disallow_any_decorated = true
+disallow_any_explicit = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+
+# Untyped definitions and calls
+#disallow_untyped_calls = true
+#disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+
+# None and Optional handling
+no_implicit_optional = true
+strict_optional = true
+
+# Configuring warnings
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+#warn_return_any = true
+warn_unreachable = true
+
+# Miscellaneous strictness flags
+allow_untyped_globals = false
+allow_redefinition = false
+local_partial_types = false
+implicit_reexport = false
+strict_equality = true
+
+# Miscellaneous
+warn_unused_configs = true
+
+
+[tool.ruff.lint]
+select = [
+    "ERA",
+    "S",
+    "B",
+    "A",
+    "C4",
+    "ISC",
+    "ICN",
+    "INP",
+    "PIE",
+    "PYI",
+    "Q",
+    "RSE",
+    "RET",
+    "SIM",
+    "TID",
+    "TC",
+    "ARG",
+    "PTH",
+    "FLY",
+    "I",
+    "N",
+    "PERF",
+    "E",
+    "W",
+    "F",
+    "PL",
+    "UP",
+    "FURB",
+    "RUF",
+
+]
+ignore = [
+    "S101",
+    "N999",
+    "PLR2004",
+]
+

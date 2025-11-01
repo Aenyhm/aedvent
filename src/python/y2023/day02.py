@@ -1,11 +1,9 @@
-import time
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterator
 from dataclasses import dataclass
 from functools import reduce
-from multiprocessing.pool import Pool
 from typing import Self
 
-from utils import get_file_content
+import utils
 
 
 @dataclass
@@ -24,7 +22,7 @@ class Turn:
 @dataclass(slots=True)
 class Game:
     gid: int
-    turns: Iterable[Turn]
+    turns: list[Turn]
 
 
 MAX_COLORS_TURN = Turn(12, 13, 14)
@@ -45,14 +43,14 @@ def parse_game(game_info: str) -> Game:
 
     return Game(
         int(id_part[5:]),
-        map(parse_turn, info_part.split("; ")),
+        list(map(parse_turn, info_part.split("; "))),
     )
 
 
-def file_to_games(file_name: str, pool: Pool) -> list[Game]:
-    content = get_file_content(file_name)
+def file_to_games(file_name: str) -> list[Game]:
+    lines = utils.file_to_lines(file_name)
 
-    return list(pool.map(parse_game, content.split("\n")))
+    return list(map(parse_game, lines))
 
 
 def get_max_game_id(game: Game) -> int:
@@ -75,30 +73,20 @@ def get_cubes_power(game: Game) -> int:
     return min_turn.red * min_turn.green * min_turn.blue
 
 
-def part1(games: Iterable[Game], pool: Pool) -> int:
-    return sum(pool.map(get_max_game_id, games))
+def part1(games: list[Game]) -> int:
+    return sum(map(get_max_game_id, games))
 
 
-def part2(games: Iterable[Game], pool: Pool) -> int:
-    return sum(pool.map(get_cubes_power, games))
+def part2(games: list[Game]) -> int:
+    return sum(map(get_cubes_power, games))
 
 
 if __name__ == "__main__":
-    pool = Pool()
+    example_games = file_to_games("02/example.txt")
+    games = file_to_games("02/input.txt")
 
-    example_games = file_to_games("data/2023/02/example.txt", pool)
-    games = file_to_games("data/2023/02/input.txt", pool)
+    assert part1(example_games) == 8
+    assert utils.profile(part1)(games) == 2285
 
-    assert part1(example_games, pool) == 8
-
-    start = time.time()
-    assert part1(games, pool) == 2285
-    end = time.time()
-    print(f'{(end - start)*1000:.3} ms')
-
-    assert part2(example_games, pool) == 2286
-
-    start = time.time()
-    assert part2(games, pool) == 77021
-    end = time.time()
-    print(f'{(end - start)*1000:.3} ms')
+    assert part2(example_games) == 2286
+    assert utils.profile(part2)(games) == 77021
